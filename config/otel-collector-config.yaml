@@ -7,6 +7,14 @@ receivers:
         endpoint: 0.0.0.0:4318
 processors:
   batch:
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: "otel"
+        action: upsert
+
+connectors:
+    datadog/connector:
 
 exporters:
   otlp:
@@ -15,8 +23,22 @@ exporters:
       insecure: true
   otlphttp:
     endpoint: http://otel-lgtm:4318
+  otlp/2:
+    endpoint: "api.honeycomb.io:443" # US instance
+    headers:
+      "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
+      "x-honeycomb-dataset": OTEL_TEST
   debug:
-    verbosity: detailed
+    verbosity: basic
+  datadog:
+    traces:
+      span_name_as_resource_name: true
+      trace_buffer: 500
+    hostname: "otelcol-docker-win"
+    api:
+      site: datadoghq.eu
+      key: ${env:DD_API_KEY}
+
 
 extensions:
   health_check:
@@ -32,13 +54,13 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: []
-      exporters: [otlp,debug]
+      processors: [batch, resource]
+      exporters: [otlp, debug, datadog, datadog/connector, otlp/2]
     metrics:
-      receivers: [otlp]
-      processors: []
-      exporters: [otlp,debug]
+      receivers: [otlp, datadog/connector]
+      processors: [batch, resource]
+      exporters: [otlp, debug , datadog, otlp/2]
     logs:
       receivers: [otlp]
-      processors: []
-      exporters: [otlp,debug]
+      processors: [batch, resource]
+      exporters: [otlp, debug, datadog, otlp/2]
