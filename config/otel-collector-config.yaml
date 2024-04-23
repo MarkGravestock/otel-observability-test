@@ -1,0 +1,44 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+processors:
+  batch:
+
+exporters:
+  otlp:
+    endpoint: otel-lgtm:4317
+    tls:
+      insecure: true
+  otlphttp:
+    endpoint: http://otel-lgtm:4318
+  debug:
+    verbosity: detailed
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+service:
+  telemetry:
+    logs:
+      level: "debug"
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlp,debug]
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlp,debug]
+    logs:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlp,debug]
