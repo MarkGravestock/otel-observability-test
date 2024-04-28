@@ -6,7 +6,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy
-//@EnableOpenTelemetry
 public class ObservabilityTestApplication {
 
     public static void main(String[] args) {

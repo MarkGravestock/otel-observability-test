@@ -12,14 +12,23 @@ title Container diagram for Observability Demo System
 Person(user, User, "A user of the observability system")
 
 System_Boundary(c1, "Observability Demo") {
-    Container(backend_api, "API Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
+    Container(observability_greeting, "Observability Greeting Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
+    Container(observability_salutation, "Observability Salutation Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
     Container(otel_collection, "Open Telemetry Collector", "Docker Container", "Provides Internet banking functionality via API")
 }
 
-System_Ext(observability_backend, "Observability Backend", "Stores logs, traces, metrics and allows querying and viewing")
+System_Ext(observability_backend, "OTEL LGTM", "Stores logs, traces, metrics and allows querying and viewing")
+System_Ext(datadog, "DataDog", "Stores logs, traces, metrics and allows querying and viewing")
+System_Ext(honeycomb, "Honeycomb", "Stores logs, traces, metrics and allows querying and viewing")
 
-Rel(user, backend_api, "Uses", "HTTPS")
+Rel(user, observability_greeting, "Uses", "HTTPS")
+Rel_Neighbor(observability_greeting, observability_salutation, "Uses", "HTTPS")
 
-Rel_Neighbor(backend_api, otel_collection, "Uses", "OTLP")
-Rel_Neighbor(otel_collection, observability_backend, "Uses", "OTLP")
+Rel(observability_greeting, otel_collection, "Uses", "OTLP")
+Rel(observability_salutation, otel_collection, "Uses", "OTLP")
+
+Rel(otel_collection, datadog, "Uses", "OTLP")
+Rel(otel_collection, observability_backend, "Uses", "OTLP")
+Rel(otel_collection, honeycomb, "Uses", "OTLP")
+
 @enduml
