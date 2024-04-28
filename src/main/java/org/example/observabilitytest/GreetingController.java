@@ -20,20 +20,27 @@ import org.springframework.web.client.RestClient;
 public class GreetingController {
 
     private final ObservationRegistry observationRegistry;
+    private final RestClient.Builder restClientBuilder;
 
     @Timed(value = "greeting.api.timing")
     @GetMapping("/greeting")
     String message(@RequestParam("name")String name) {
-        RestClient client = RestClient.builder().observationRegistry(observationRegistry).build();
+        RestClient client = restClientBuilder.observationRegistry(observationRegistry).build();
 
         log.info("Generating greeting");
 
-        var salutation = Observation.createNotStarted("calling.greeting.service", this.observationRegistry).observe(() -> client.get()
+        var salutation = Observation.createNotStarted("calling.salutation.service", this.observationRegistry).observe(() -> client.get()
                 .uri("http://localhost:8081/salutation")
                 .retrieve()
                 .toEntity(String.class)
                 .getBody());
 
-        return String.format("%s, %s",salutation, name);
+        var visitNumber = Observation.createNotStarted("calling.visitor.service", this.observationRegistry).observe(() -> client.get()
+                .uri("http://localhost:8082/permanent-visit")
+                .retrieve()
+                .toEntity(Long.class)
+                .getBody());
+
+        return String.format("%s, %s. You are our %d visitor",salutation, name, visitNumber);
     }
 }

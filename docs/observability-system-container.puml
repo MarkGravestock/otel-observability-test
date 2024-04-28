@@ -14,18 +14,25 @@ Person(user, User, "A user of the observability system")
 System_Boundary(c1, "Observability Demo") {
     Container(observability_greeting, "Observability Greeting Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
     Container(observability_salutation, "Observability Salutation Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
+    Container(observability_visitor, "Observability Visitor Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
     Container(otel_collection, "Open Telemetry Collector", "Docker Container", "Provides Internet banking functionality via API")
+    Container(mysql, "MySql Database", "Docker Container", "Provides Internet banking functionality via API")
 }
 
 System_Ext(observability_backend, "OTEL LGTM", "Stores logs, traces, metrics and allows querying and viewing")
 System_Ext(datadog, "DataDog", "Stores logs, traces, metrics and allows querying and viewing")
 System_Ext(honeycomb, "Honeycomb", "Stores logs, traces, metrics and allows querying and viewing")
 
-Rel(user, observability_greeting, "Uses", "HTTPS")
-Rel_Neighbor(observability_greeting, observability_salutation, "Uses", "HTTPS")
+Rel(observability_greeting, observability_salutation, "Uses", "HTTP:8081")
+Rel(user, observability_greeting, "Uses", "HTTP:8080")
+Rel_Neighbor(observability_greeting, observability_visitor, "Uses", "HTTP:8082")
 
 Rel(observability_greeting, otel_collection, "Uses", "OTLP")
 Rel(observability_salutation, otel_collection, "Uses", "OTLP")
+Rel(observability_visitor, otel_collection, "Uses", "OTLP")
+Rel_Neighbor(otel_collection, mysql, "Uses", "JDBC")
+
+Rel(observability_visitor, mysql, "Uses", "JDBC")
 
 Rel(otel_collection, datadog, "Uses", "OTLP")
 Rel(otel_collection, observability_backend, "Uses", "OTLP")

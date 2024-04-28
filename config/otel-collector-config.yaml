@@ -5,7 +5,20 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
+  mysql:
+    endpoint: mysql:3306
+    password: ${env:MYSQL_PASSWORD}
+    collection_interval: 10s
+    initial_delay: 1s
+    statement_events:
+      digest_text_limit: 120
+      time_limit: 24h
+      limit: 250
+
 processors:
+  resourcedetection:
+    detectors: [ env, system ]
+  cumulativetodelta:
   batch:
   resource:
     attributes:
@@ -14,7 +27,7 @@ processors:
         action: upsert
 
 connectors:
-    datadog/connector:
+  datadog/connector:
 
 exporters:
   otlp:
@@ -23,11 +36,16 @@ exporters:
       insecure: true
   otlphttp:
     endpoint: http://otel-lgtm:4318
-  otlp/2:
+  otlp/honeycomb:
     endpoint: "api.honeycomb.io:443" # US instance
     headers:
       "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
       "x-honeycomb-dataset": OTEL_TEST
+  otlp/uptrace:
+    endpoint: https://otlp.uptrace.dev:4317
+    tls: { insecure: false }
+    headers:
+      uptrace-dsn: ${env:UPTRACE_DSN}
   debug:
     verbosity: basic
   datadog:
@@ -55,12 +73,12 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch, resource]
-      exporters: [otlp, debug, datadog, datadog/connector, otlp/2]
+      exporters: [otlp, debug, datadog, datadog/connector, otlp/honeycomb, otlp/uptrace]
     metrics:
-      receivers: [otlp, datadog/connector]
-      processors: [batch, resource]
-      exporters: [otlp, debug, datadog, otlp/2]
+      receivers: [otlp, datadog/connector, mysql]
+      processors: [cumulativetodelta, batch, resource]
+      exporters: [otlp, debug, datadog, otlp/honeycomb, otlp/uptrace]
     logs:
       receivers: [otlp]
       processors: [batch, resource]
-      exporters: [otlp, debug, datadog, otlp/2]
+      exporters: [otlp, debug, datadog, otlp/honeycomb, otlp/uptrace]

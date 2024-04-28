@@ -28,17 +28,23 @@ repositories {
     }
 } */
 
+val otelVersion = "2.3.0-alpha"
+val mySqlConnectorVersion = "8.0.28"
+
 dependencies {
     compileOnly("org.projectlombok:lombok")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     // Required for @Timed aspect
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    //implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter:1.22.1-alpha")
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
-    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
-    implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.3.0-alpha")
     implementation("io.micrometer:micrometer-observation")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:${otelVersion}")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-jdbc:${otelVersion}")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-spring-web-3.1:${otelVersion}")
+    runtimeOnly("mysql:mysql-connector-java:${mySqlConnectorVersion}")
     runtimeOnly("io.micrometer:micrometer-registry-otlp")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.projectlombok:lombok")

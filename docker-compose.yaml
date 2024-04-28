@@ -14,6 +14,8 @@ services:
     environment:
       - DD_API_KEY=${DD_API_KEY}
       - HONEYCOMB_API_KEY=${HONEYCOMB_API_KEY}
+      - MYSQL_PASSWORD=my-secret-password
+      - UPTRACE_DSN=${UPTRACE_DSN}
     volumes:
       - ./config/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
     ports:
@@ -24,3 +26,19 @@ services:
       - 4327:4317 # OTLP gRPC receiver
       - 4328:4318 # OTLP http receiver
       - 55679:55679 # zpages extension
+
+  mysql:
+    image: mysql:8.3
+    container_name: my-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-password
+      MYSQL_DATABASE: visitors
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: myuserpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
