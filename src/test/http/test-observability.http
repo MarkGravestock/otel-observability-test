@@ -2,4 +2,4 @@ GET http://localhost:8080/actuator/prometheus
 
 ####
 
-GET http://localhost:8080/message
+GET http://localhost:8080/greeting?name=Mark
