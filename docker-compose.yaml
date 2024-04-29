@@ -11,6 +11,9 @@ services:
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib
+    env_file:
+      - path: config/cloud.env
+        required: true
     environment:
       - DD_API_KEY=${DD_API_KEY}
       - HONEYCOMB_API_KEY=${HONEYCOMB_API_KEY}
