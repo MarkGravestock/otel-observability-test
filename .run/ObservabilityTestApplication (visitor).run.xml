@@ -4,6 +4,7 @@
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="observability-test.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.example.observabilitytest.ObservabilityTestApplication" />
+    <option name="VM_PARAMETERS" value="-javaagent:./libs/opentelemetry-javaagent.jar -Dotel.exporter.otlp.endpoint=http://localhost:4328  -Dotel.service.name=auto-visitor" />
     <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
       <option name="credential" />
       <option name="region" />
