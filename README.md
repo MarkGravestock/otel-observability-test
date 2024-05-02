@@ -8,4 +8,4 @@
  - Open Telementry Collector
  - Open Telementry LGTM Backend
 
-### See [Documentation)](docs/open-telemetry.md) for details.
+### See [Documentation](docs/open-telemetry.md) for details.
