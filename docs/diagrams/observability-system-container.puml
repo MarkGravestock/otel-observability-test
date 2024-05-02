@@ -17,9 +17,9 @@ System_Boundary(c1, "Observability Demo") {
     Container(observability_visitor, "Observability Visitor Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
     Container(otel_collection, "Open Telemetry Collector", "Docker Container", "Provides Internet banking functionality via API")
     Container(mysql, "MySql Database", "Docker Container", "Provides Internet banking functionality via API")
+    Container(observability_backend, "OTEL LGTM", "Stores logs, traces, metrics and allows querying and viewing")
 }
 
-System_Ext(observability_backend, "OTEL LGTM", "Stores logs, traces, metrics and allows querying and viewing")
 System_Ext(datadog, "DataDog", "Stores logs, traces, metrics and allows querying and viewing")
 System_Ext(honeycomb, "Honeycomb", "Stores logs, traces, metrics and allows querying and viewing")
 
