@@ -87,7 +87,11 @@ See how the pipeline matches the definition in config
 
 #### Demo
 
-- Auto Telemetry
+- Manual Telemetry / Auto Telemetry
+
+[LGTM](http://localhost:3000/explore)
+
+admin/admin
 
 ![demo_c4_container_diagram.png](images/demo_c4_container_diagram.png)
 
