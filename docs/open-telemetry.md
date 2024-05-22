@@ -1,7 +1,7 @@
 ## Why ?
 
 - Looking at observability at work
-- Stumbled across announce of OTEL LGTM
+- Stumbled across announcement of [OTEL LGTM](https://grafana.com/blog/2024/03/13/an-opentelemetry-backend-in-a-docker-image-introducing-grafana/otel-lgtm/)
   - Had found other OS backends a pain
 - Decided to look at OTEL again
 - Wanted to put observability in some sort of context
