@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
+
 plugins {
     java
     id("org.springframework.boot") version "3.2.4"
@@ -46,4 +48,34 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+// ── Service run tasks ────────────────────────────────────────────────────────
+// Each task starts a service with the OpenTelemetry Java agent attached and
+// telemetry pointed at the local collector (docker-compose must be running).
+// Usage: ./gradlew runGreeting  (in a separate terminal for each service)
+
+val otelJvmArgs = listOf(
+    "-javaagent:${rootDir}/libs/opentelemetry-javaagent.jar",
+    "-Dotel.exporter.otlp.endpoint=http://localhost:4328",
+    "-Dotel.exporter.otlp.protocol=http/protobuf",
+    "-Dotel.traces.exporter=otlp",
+    "-Dotel.metrics.exporter=otlp",
+    "-Dotel.logs.exporter=otlp"
+)
+
+listOf(
+    Triple("Greeting",   "greeting",   "observability-greeting"),
+    Triple("Salutation", "salutation", "observability-salutation"),
+    Triple("Visitor",    "visitor",    "observability-visitor")
+).forEach { (name, profile, serviceName) ->
+    tasks.register<BootRun>("run$name") {
+        group = "application"
+        description = "Run the $name service with OpenTelemetry auto-instrumentation"
+        dependsOn(tasks.classes)
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("org.example.observabilitytest.ObservabilityTestApplication")
+        args("--spring.profiles.active=$profile")
+        jvmArgs(otelJvmArgs + "-Dotel.service.name=$serviceName")
+    }
 }
