@@ -88,16 +88,27 @@ See how the pipeline matches the definition in config
 
 ## Demo
 
-- Auto Instrumentation - three Spring Boot services instrumented via the Java agent, zero code changes
+#### Demo
 
-![C4 container diagram: User to Greeting (8080) which calls Salutation (8081) and Visitor (8082), Visitor persists to MySQL](images/demo_c4_container_diagram.png)
+The demo uses three services communicating over HTTP, plus a fourth communicating over Kafka — all auto-instrumented with the OpenTelemetry Java agent.
 
-- Trigger a trace: `curl "http://localhost:8080/greeting?name=World"`
-- In Grafana Tempo - a distributed trace spanning all three services
-  - HTTP client and server spans created automatically
-  - Database span showing the MySQL query from the Visitor service
-- In Grafana Loki - logs from all three services, correlated to the same trace ID
-- In Grafana/Prometheus - JVM and HTTP metrics exported from all three services
+**Service topology:**
+
+- **Greeting** (port 8080) — orchestrates a greeting by calling Salutation and Visitor over HTTP
+- **Salutation** (port 8081) — determines time-of-day greeting by requesting the current time from Time-Provider **over Kafka** (request-reply)
+- **Visitor** (port 8082) — counts and persists visitor numbers in MySQL
+- **Time-Provider** (port 8083) — listens on Kafka `time-request` topic, replies with current hour on `time-reply`
+
+**What gets observed:**
+
+- **Distributed traces** — a single `curl` to Greeting produces a trace spanning HTTP → Kafka produce → Kafka consume (Time-Provider) → Kafka produce (reply) → Kafka consume (Salutation). Visible in Grafana Tempo.
+- **Kafka broker metrics** — the OTel Collector scrapes the Kafka broker via `kafkametricsreceiver` (topics, consumer groups, broker stats). Visible in Grafana via Prometheus.
+- **MySQL metrics** — scraped by the OTel Collector's `mysqlreceiver`.
+- **Logs** — correlated with trace IDs via the OpenTelemetry Logback appender.
+
+No manual `@Span` annotations or OTel SDK calls — everything is instrumented automatically by `opentelemetry-javaagent.jar`.
+
+![demo_c4_container_diagram.png](images/demo_c4_container_diagram.png)
 
 ## Summary
 

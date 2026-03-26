@@ -1,10 +1,5 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
-' uncomment the following line and comment the first to use locally
-' !include C4_Container.puml
-
-' LAYOUT_TOP_DOWN()
-' LAYOUT_AS_SKETCH()
 LAYOUT_WITH_LEGEND()
 
 title Container diagram for Observability Demo System
@@ -12,30 +7,37 @@ title Container diagram for Observability Demo System
 Person(user, User, "A user of the observability system")
 
 System_Boundary(c1, "Observability Demo") {
-    Container(observability_greeting, "Observability Greeting Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
-    Container(observability_salutation, "Observability Salutation Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
-    Container(observability_visitor, "Observability Visitor Application", "Java, Spring, Docker Container", "Provides Internet banking functionality via API")
-    Container(otel_collection, "Open Telemetry Collector", "Docker Container", "Provides Internet banking functionality via API")
-    Container(mysql, "MySql Database", "Docker Container", "Provides Internet banking functionality via API")
-    Container(observability_backend, "OTEL LGTM", "Stores logs, traces, metrics and allows querying and viewing")
+    Container(observability_greeting, "Greeting Service", "Java, Spring Boot", "Orchestrates greeting: calls Salutation and Visitor over HTTP")
+    Container(observability_salutation, "Salutation Service", "Java, Spring Boot", "Returns time-of-day greeting; requests current time from Time-Provider via Kafka")
+    Container(observability_visitor, "Visitor Service", "Java, Spring Boot", "Tracks and persists visitor count in MySQL")
+    Container(observability_time_provider, "Time-Provider Service", "Java, Spring Boot", "Listens on Kafka for time requests; replies with current hour")
+    Container(kafka, "Apache Kafka", "Docker, KRaft mode", "Message broker for time request/reply; broker metrics scraped by OTel Collector")
+    Container(otel_collection, "OpenTelemetry Collector", "Docker Container", "Receives OTLP telemetry; scrapes MySQL and Kafka broker metrics; forwards to LGTM")
+    Container(mysql, "MySQL Database", "Docker Container", "Stores visitor counts")
+    Container(observability_backend, "Grafana LGTM", "Docker Container", "Stores and visualises logs (Loki), traces (Tempo), and metrics (Prometheus/Mimir)")
 }
 
-System_Ext(datadog, "DataDog", "Stores logs, traces, metrics and allows querying and viewing")
-System_Ext(honeycomb, "Honeycomb", "Stores logs, traces, metrics and allows querying and viewing")
+System_Ext(datadog, "DataDog", "External observability backend")
+System_Ext(honeycomb, "Honeycomb", "External observability backend")
 
-Rel(observability_greeting, observability_salutation, "Uses", "HTTP:8081")
 Rel(user, observability_greeting, "Uses", "HTTP:8080")
-Rel_Neighbor(observability_greeting, observability_visitor, "Uses", "HTTP:8082")
+Rel(observability_greeting, observability_salutation, "Uses", "HTTP:8081")
+Rel(observability_greeting, observability_visitor, "Uses", "HTTP:8082")
 
-Rel(observability_greeting, otel_collection, "Uses", "OTLP")
-Rel(observability_salutation, otel_collection, "Uses", "OTLP")
-Rel(observability_visitor, otel_collection, "Uses", "OTLP")
-Rel_Neighbor(otel_collection, mysql, "Uses", "JDBC")
+Rel(observability_salutation, kafka, "Publishes/Subscribes", "time-request / time-reply")
+Rel(observability_time_provider, kafka, "Publishes/Subscribes", "time-request / time-reply")
 
-Rel(observability_visitor, mysql, "Uses", "JDBC")
+Rel(observability_greeting, otel_collection, "Sends telemetry", "OTLP")
+Rel(observability_salutation, otel_collection, "Sends telemetry", "OTLP")
+Rel(observability_visitor, otel_collection, "Sends telemetry", "OTLP")
+Rel(observability_time_provider, otel_collection, "Sends telemetry", "OTLP")
 
-Rel(otel_collection, datadog, "Uses", "OTLP")
-Rel(otel_collection, observability_backend, "Uses", "OTLP")
-Rel(otel_collection, honeycomb, "Uses", "OTLP")
+Rel(otel_collection, mysql, "Scrapes metrics", "JDBC")
+Rel(otel_collection, kafka, "Scrapes broker metrics", "Kafka API:19092")
+Rel(observability_visitor, mysql, "Persists data", "JDBC")
+
+Rel(otel_collection, observability_backend, "Exports telemetry", "OTLP")
+Rel(otel_collection, datadog, "Exports telemetry", "OTLP")
+Rel(otel_collection, honeycomb, "Exports telemetry", "OTLP")
 
 @enduml
