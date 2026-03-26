@@ -25,8 +25,8 @@ public class SalutationController {
     String salutation() throws Exception {
         log.info("Requesting time via Kafka");
         var record = new ProducerRecord<String, String>("time-request", "get-time");
-        RequestReplyFuture<String, String, String> future = replyingKafkaTemplate.sendAndReceive(record);
-        int hourOfDay = Integer.parseInt(future.get(5, TimeUnit.SECONDS).value());
+        var future = replyingKafkaTemplate.sendAndReceive(record);
+        var hourOfDay = Integer.parseInt(future.get(5, TimeUnit.SECONDS).value());
 
         if (hourOfDay < 12) return "Good Morning";
         if (hourOfDay < 18) return "Good Afternoon";
