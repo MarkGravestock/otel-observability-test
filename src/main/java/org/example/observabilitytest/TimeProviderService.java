@@ -16,7 +16,8 @@ public class TimeProviderService {
     @KafkaListener(topics = "time-request", groupId = "time-provider-group")
     @SendTo
     public String provideTime(String request) {
-        log.info("Received time request, returning current hour");
-        return String.valueOf(LocalTime.now().getHour());
+        var currentHour = LocalTime.now().getHour();
+        log.info("Received time request, returning current hour {}", currentHour);
+        return String.valueOf(currentHour);
     }
 }
