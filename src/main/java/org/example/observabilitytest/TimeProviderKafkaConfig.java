@@ -10,6 +10,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 @Profile("time-provider")
 public class TimeProviderKafkaConfig {
 
+    // Spring Boot 4 splits Kafka auto-config into spring-boot-kafka module; the auto-configured
+    // KafkaTemplate bean requires raw type injection here due to Java 25 generics resolution.
     @Autowired
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void configureReplyTemplate(
