@@ -31,6 +31,9 @@ dependencies {
     implementation(libs.spring.boot.starter.data.jpa)
     runtimeOnly(libs.spring.boot.docker.compose)
     implementation(libs.otel.logback.appender)
+    implementation(libs.spring.kafka)
+    testImplementation(libs.spring.kafka.test)
+    testRuntimeOnly(libs.h2)
     runtimeOnly(libs.mysql.connector.j)
     developmentOnly(libs.spring.boot.devtools)
     testImplementation(libs.spring.boot.starter.test)
@@ -55,9 +58,10 @@ val otelJvmArgs = listOf(
 )
 
 listOf(
-    Triple("Greeting",   "greeting",   "observability-greeting"),
-    Triple("Salutation", "salutation", "observability-salutation"),
-    Triple("Visitor",    "visitor",    "observability-visitor")
+    Triple("Greeting",      "greeting",       "observability-greeting"),
+    Triple("Salutation",    "salutation",     "observability-salutation"),
+    Triple("Visitor",       "visitor",        "observability-visitor"),
+    Triple("TimeProvider",  "time-provider",  "observability-time-provider")
 ).forEach { (name, profile, serviceName) ->
     tasks.register<BootRun>("run$name") {
         group = "application"
