@@ -1,7 +1,6 @@
 package org.example.observabilitytest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -12,9 +11,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 public class TimeProviderKafkaConfig {
 
     @Autowired
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void configureReplyTemplate(
             ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory,
-            @Qualifier("kafkaTemplate") KafkaTemplate<String, String> kafkaTemplate) {
+            KafkaTemplate kafkaTemplate) {
         kafkaListenerContainerFactory.setReplyTemplate(kafkaTemplate);
     }
 }

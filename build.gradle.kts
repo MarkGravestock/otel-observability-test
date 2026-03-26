@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.spring.boot.starter.data.jpa)
     runtimeOnly(libs.spring.boot.docker.compose)
     implementation(libs.otel.logback.appender)
+    implementation(libs.spring.boot.kafka)
     implementation(libs.spring.kafka)
     testImplementation(libs.spring.kafka.test)
     testRuntimeOnly(libs.h2)

@@ -20,6 +20,7 @@ spring-boot-devtools         = { module = "org.springframework.boot:spring-boot-
 # Other (version managed by Spring Boot BOM)
 mysql-connector-j = { module = "com.mysql:mysql-connector-j" }
 lombok            = { module = "org.projectlombok:lombok" }
+spring-boot-kafka = { module = "org.springframework.boot:spring-boot-kafka" }
 spring-kafka      = { module = "org.springframework.kafka:spring-kafka" }
 spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test" }
 h2                = { module = "com.h2database:h2" }
