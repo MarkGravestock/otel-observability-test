@@ -22,7 +22,8 @@ try {
     $services = @(
         @{ Task = "runGreeting";   Log = "greeting.log";   Port = 8080 },
         @{ Task = "runSalutation"; Log = "salutation.log"; Port = 8081 },
-        @{ Task = "runVisitor";    Log = "visitor.log";    Port = 8082 }
+        @{ Task = "runVisitor";    Log = "visitor.log";    Port = 8082 },
+        @{ Task = "runTimeProvider";    Log = "time-provide.log";    Port = 8083 }
     )
 
     $processes = @()
