@@ -24,7 +24,6 @@ receivers:
 processors:
   resourcedetection:
     detectors: [ env, system ]
-  cumulativetodelta:
   batch:
   resource:
     attributes:
@@ -58,7 +57,7 @@ service:
       exporters: [otlp, debug]
     metrics:
       receivers: [otlp, postgresql, kafkametrics]
-      processors: [cumulativetodelta, batch, resource]
+      processors: [batch, resource]
       exporters: [otlp, debug]
     logs:
       receivers: [otlp]

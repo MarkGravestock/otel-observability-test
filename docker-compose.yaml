@@ -1,13 +1,13 @@
 services:
   otel-lgtm:
-    image: grafana/otel-lgtm:0.22.0
+    image: grafana/otel-lgtm:0.27.1
     ports:
       - "3000:3000"  # Grafana UI
       - "4317:4317"  # OpenTelemetry gRPC
       - "4318:4318"  # OpenTelemetry HTTP
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.148.0
+    image: otel/opentelemetry-collector-contrib:0.151.0
     environment:
       - POSTGRESQL_PASSWORD=myuserpassword
     volumes:
