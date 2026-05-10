@@ -3,3 +3,15 @@ GET http://localhost:8080/actuator/prometheus
 ####
 
 GET http://localhost:8080/greeting?name=John
+
+
+###
+# curl http://localhost:8083/actuator/health
+GET http://localhost:8083/actuator/health
+
+###
+# curl http://localhost:8082/actuator/health
+GET http://localhost:8082/actuator/health
+
+###
+###

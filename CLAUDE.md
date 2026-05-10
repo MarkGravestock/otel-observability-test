@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Run tests
 ./gradlew test
 
-# Start infrastructure (OTEL Collector, Grafana LGTM, MySQL)
+# Start infrastructure (OTEL Collector, Grafana LGTM, PostgreSQL)
 docker-compose up -d
 
 # Run each service in a separate terminal — Java agent is pre-configured
@@ -35,7 +35,7 @@ This project is an educational demo of OpenTelemetry auto-instrumentation with f
 User → Greeting Service (8080)
            ├→ Salutation Service (8081)   [requests time via Kafka, returns greeting text]
            │       └→ Kafka time-request → Time-Provider Service (8083)
-           └→ Visitor Service (8082)      [visitor count, persisted in MySQL]
+           └→ Visitor Service (8082)      [visitor count, persisted in PostgreSQL]
 ```
 
 **Telemetry pipeline:**
@@ -43,7 +43,7 @@ User → Greeting Service (8080)
 All Services (auto-instrumented via libs/opentelemetry-javaagent.jar)
     ↓ OTLP (traces, metrics, logs)
 OpenTelemetry Collector (config/otel-collector-config.yaml)
-    ↓ processes + forwards                  ← also scrapes MySQL (mysqlreceiver)
+    ↓ processes + forwards                  ← also scrapes PostgreSQL (postgresqlreceiver)
     ↓                                       ← also scrapes Kafka (kafkametricsreceiver)
 Grafana LGTM stack (Tempo/Prometheus/Loki) → Grafana UI
 ```
@@ -55,7 +55,7 @@ Services are instrumented automatically via the Java agent — no manual `@Span`
 - **Single codebase, multiple services**: All four controllers exist in one Spring Boot app. Profile-specific `application-{profile}.properties` files set the service name, port, and which beans are active.
 - **Auto-instrumentation only**: The project explicitly moved away from manual OTel SDK configuration (`dfe4ab2`). The `libs/opentelemetry-javaagent.jar` agent handles all instrumentation.
 - **Collector as central hub**: `config/otel-collector-config.yaml` includes commented-out exporters for Datadog, Honeycomb, and Uptrace — the collector is the switching point for routing telemetry to different backends.
-- **MySQL metrics**: The collector's `mysqlreceiver` scrapes MySQL metrics directly, alongside app telemetry.
+- **PostgreSQL metrics**: The collector's `postgresqlreceiver` scrapes PostgreSQL metrics directly, alongside app telemetry.
 - **Kafka metrics**: The collector's `kafkametricsreceiver` scrapes Kafka broker metrics directly, providing visibility into the message bus used by the Salutation ↔ Time-Provider flow.
 
 ## Configuration

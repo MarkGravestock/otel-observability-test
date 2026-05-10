@@ -18,20 +18,22 @@ public class SalutationController {
 
     private final ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplate;
 
-    // TimeoutException / ExecutionException propagates as HTTP 500 by design —
-    // time-provider must be running. See design spec for failure-mode rationale.
     @GetMapping("/salutation")
     String salutation() throws Exception {
         log.info("Requesting time via Kafka");
         var record = new ProducerRecord<String, String>("time-request", "get-time");
         var future = replyingKafkaTemplate.sendAndReceive(record);
-        var hourOfDay = Integer.parseInt(future.get(5, TimeUnit.SECONDS).value());
-        log.info("Received hour via Kafka {}", hourOfDay);
-
-        return switch (hourOfDay / 6) {
-            case 0, 1 -> "Good Morning";    // 0–11
-            case 2    -> "Good Afternoon";  // 12–17
-            default   -> "Good Evening";    // 18–23
-        };
+        try {
+            var hourOfDay = Integer.parseInt(future.get(5, TimeUnit.SECONDS).value());
+            log.info("Received hour via Kafka {}", hourOfDay);
+            return switch (hourOfDay / 6) {
+                case 0, 1 -> "Good Morning";    // 0–11
+                case 2    -> "Good Afternoon";  // 12–17
+                default   -> "Good Evening";    // 18–23
+            };
+        } catch (Exception e) {
+            log.warn("Time-provider unavailable, using fallback salutation");
+            return "Hello";
+        }
     }
 }
