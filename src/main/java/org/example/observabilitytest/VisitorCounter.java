@@ -1,26 +1,35 @@
 package org.example.observabilitytest;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class VisitorCounter {
+public class VisitorCounter implements Persistable<Long> {
   @Id
-  @GeneratedValue(strategy= GenerationType.AUTO)
   private Long id;
 
   private Long visitorCount;
 
+  @Transient
+  private boolean newEntity;
+
+  @Override
+  public boolean isNew() {
+    return newEntity;
+  }
+
   public static VisitorCounter of(Long id) {
-    return new VisitorCounter(id, 0L);
+    var vc = new VisitorCounter();
+    vc.id = id;
+    vc.visitorCount = 0L;
+    vc.newEntity = true;
+    return vc;
   }
 
   public void increment() {

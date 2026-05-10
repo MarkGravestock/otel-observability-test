@@ -35,7 +35,7 @@ dependencies {
     implementation(libs.spring.kafka)
     testImplementation(libs.spring.kafka.test)
     testRuntimeOnly(libs.h2)
-    runtimeOnly(libs.mysql.connector.j)
+    runtimeOnly(libs.postgresql)
     developmentOnly(libs.spring.boot.devtools)
     testImplementation(libs.spring.boot.starter.test)
 }

@@ -9,7 +9,7 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.148.0
     environment:
-      - MYSQL_PASSWORD=my-secret-password
+      - POSTGRESQL_PASSWORD=myuserpassword
     volumes:
       - ./config/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
     ports:
@@ -24,18 +24,17 @@ services:
       kafka:
         condition: service_healthy
 
-  mysql:
-    image: mysql:8.4.8
-    container_name: my-mysql
+  postgres:
+    image: postgres:17
+    container_name: my-postgres
     environment:
-      MYSQL_ROOT_PASSWORD: my-secret-password
-      MYSQL_DATABASE: visitors
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: myuserpassword
+      POSTGRES_PASSWORD: myuserpassword
+      POSTGRES_DB: visitors
+      POSTGRES_USER: myuser
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql/data
 
   kafka:
     image: apache/kafka:4.0.0
@@ -68,5 +67,5 @@ services:
       start_period: 15s
 
 volumes:
-  mysql-data:
+  postgres-data:
   kafka-data:
